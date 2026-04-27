@@ -8,7 +8,10 @@ public class StartGate : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        throw new NotImplementedException();
+        if (other.tag.Equals("Player"))
+        {
+            StartRace.Invoke();
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private TimeSpan raceStart;
+    private DateTime raceStart;
+    private TimeSpan raceTime;
+    private bool racing = false;
+    
     public delegate void TimerEvent();
 
     private void OnEnable()
@@ -12,20 +15,25 @@ public class GameManager : MonoBehaviour
         FinishGate.FinishRace += FinishRace;
     }
        
+    void FinishRace()
+    {
+        racing = false;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void StartRace()
     {
-        
+        racing = true;
+        raceStart = DateTime.Now;
     }
 
-    void FinishRace()
-    {
-        
-    }
+    
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (racing)
+            raceTime = DateTime.Now - raceStart;
+        //TimeSpan raceTime = DateTime.Now - raceStart;
+
     }
 }

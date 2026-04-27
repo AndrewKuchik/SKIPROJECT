@@ -1,5 +1,5 @@
 using UnityEngine;
-using static AudioManager;
+//using static AudioManager;
 
 public class AudioManager : MonoBehaviour
 {
@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     private void PlayObstacleHitSound()
     {
-        AudioSource.PlayOneShot(obstacleHitSound);
+        audioSource.PlayOneShot(obstacleHitSound);
     }
+    
 }
