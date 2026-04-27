@@ -2,15 +2,20 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public delegate void PlayerHitAction();
+    public static event PlayerHitAction OnPlayerHit;
+    
+    private void OnCollisionEnter(Collision collision)
     {
-        
+        OnCollision(collision);
     }
 
-    // Update is called once per frame
-    void Update()
+    internal virtual void OnCollision(Collision collision)
     {
-        
+        if (collision.collider.tag.Equals("Player"))
+        {
+            Debug.Log("Player collided with Obstacle"+ name);
+        }
+        OnPlayerHit.Invoke();
     }
 }

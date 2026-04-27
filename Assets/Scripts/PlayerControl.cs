@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerControl : MonoBehaviour
@@ -7,6 +8,10 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private float rotationSpeed = 30f, moveSpeed = -10f;
     [SerializeField] private bool isGrounded = true;
     [SerializeField] private LayerMask groundLayers;
+    [SerializeField] private Vector3 pushbackForce;
+        [SerializeField] private bool disabled = false;
+        [SerializeField] private float disabledTime = 0.7f;
+        private float lastDisabledTime;
 private Rigidbody rb;
     private void Awake()
     {
@@ -15,6 +20,20 @@ private Rigidbody rb;
         
     }
 
+    private void OnEnable()
+    {
+        Obstacle.OnPlayerHit += TakeDamage;
+    }
+
+    void TakeDamage()
+    {
+        
+        disabled = true;
+        lastDisabledTime = Time.timeSinceLevelLoad;
+        rb.AddForce(pushbackForce);
+        Debug.Log("I GOT HIT");
+        
+    }
     //private void OnDrawGizmos()
    // {
     //    Gizmos.color = Color.red;
@@ -27,7 +46,11 @@ private Rigidbody rb;
             transform.position - transform.up*2, groundLayers);
         Gizmos.color = Color.red;
         Debug.DrawLine(transform.position,transform.position - transform.up);
-        if(isGrounded)
+        
+        if(Time.timeSinceLevelLoad > lastDisabledTime - disabledTime)
+            disabled = false;
+        
+        if(isGrounded && !disabled)
         {
         Vector2 moveVector = move.ReadValue<Vector2>();
         float slopeAngle = Mathf.Abs(transform.localEulerAngles.y - 180f);
@@ -36,7 +59,7 @@ private Rigidbody rb;
         transform.Rotate(0,moveVector.x * rotationSpeed * Time.fixedDeltaTime,0);
         //Debug.Log("move x: " + moveVector.x + ", y: " + moveVector.y); 
         
-        Debug.Log("slopeAngle" + slopeAngle);
+        //Debug.Log("slopeAngle" + slopeAngle);
         }
                 
         
