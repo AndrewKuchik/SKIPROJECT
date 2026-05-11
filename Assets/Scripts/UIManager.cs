@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float fadeSpeed = 0.5f;
 
     [SerializeField] private GameObject gameOverMenu;
+
+    [SerializeField] private int nextLevelIndex;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,6 +26,11 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         FinishGate.FinishRace += FinishRaceUI;
+    }
+
+    private void OnDisable()
+    {
+        FinishGate.FinishRace -= FinishRaceUI;
     }
 
     private void FinishRaceUI()
@@ -47,22 +56,33 @@ public class UIManager : MonoBehaviour
 
     public void Retry()
     {
-        
+        StartCoroutine(RetryCoroutine());
     }
 
     private IEnumerator RetryCoroutine()
     {
         yield return StartCoroutine(FadeInOverlay());
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void Quit()
     {
-        
+        StartCoroutine(QuitCoroutine());
+    }
+    private IEnumerator QuitCoroutine()
+    {
+        yield return StartCoroutine(FadeInOverlay());
+        Application.Quit();
     }
 
     public void NextLevel()
     {
-        
+        StartCoroutine(NextLevelCoroutine());
+    }
+    private IEnumerator NextLevelCoroutine()
+    {
+        yield return StartCoroutine(FadeInOverlay());
+        SceneManager.LoadScene(nextLevelIndex);
     }
     void Update()
     {

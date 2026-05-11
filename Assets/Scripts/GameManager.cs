@@ -1,15 +1,18 @@
 using System;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     private DateTime raceStart;
     private TimeSpan raceTime;
     private TimeSpan penaltyTime;
+    private TimeSpan bestTime;
     private bool racing = false;
-    
+    [SerializeField] private TMP_Text timerText, bestTimeText;
     public delegate void TimerEvent();
 
+    [SerializeField]private string bestTimeKey = "bestTimeLVL1";
     private void OnEnable()
     {
         StartGate.StartRace += StartRace;
@@ -17,6 +20,12 @@ public class GameManager : MonoBehaviour
         SlalomFlag.RacePenalty += AddRacePenalty;
     }
 
+    private void Start()
+    {
+        int bestTimeInt = PlayerPrefs.GetInt(bestTimeKey, int.MaxValue);
+        bestTime = new TimeSpan(bestTimeInt);
+        bestTimeText.text = "BEST TIME" + bestTime.ToString("mm\\:ss");
+    }
     void AddRacePenalty()
     {
         penaltyTime += new TimeSpan(0, 0, 3);
@@ -24,6 +33,13 @@ public class GameManager : MonoBehaviour
     void FinishRace()
     {
         racing = false;
+        if (raceTime < bestTime)
+        {
+            bestTimeText.text = "BEST TIME" + raceTime.ToString("mm\\:ss");
+            PlayerPrefs.SetInt(bestTimeKey,(int)raceTime.Ticks);
+            PlayerPrefs.Save();
+            
+        }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void StartRace()
@@ -39,7 +55,8 @@ public class GameManager : MonoBehaviour
     {
         if (racing)
             raceTime = DateTime.Now - raceStart + penaltyTime;
-        //TimeSpan raceTime = DateTime.Now - raceStart;
+        timerText.text = "TIME " + raceTime.ToString("mm\\:ss");
+        
 
     }
 }

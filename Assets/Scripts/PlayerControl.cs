@@ -27,6 +27,11 @@ public static Transform playerPos;
         Obstacle.OnPlayerHit += TakeDamage;
     }
 
+    private void OnDisable()
+    {
+        Obstacle.OnPlayerHit -= TakeDamage;
+    }
+
     void TakeDamage()
     {
         
