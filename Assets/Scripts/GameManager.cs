@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     private DateTime raceStart;
     private TimeSpan raceTime;
+    private TimeSpan penaltyTime;
     private bool racing = false;
     
     public delegate void TimerEvent();
@@ -13,8 +14,13 @@ public class GameManager : MonoBehaviour
     {
         StartGate.StartRace += StartRace;
         FinishGate.FinishRace += FinishRace;
+        SlalomFlag.RacePenalty += AddRacePenalty;
     }
-       
+
+    void AddRacePenalty()
+    {
+        penaltyTime += new TimeSpan(0, 0, 3);
+    }
     void FinishRace()
     {
         racing = false;
@@ -32,7 +38,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (racing)
-            raceTime = DateTime.Now - raceStart;
+            raceTime = DateTime.Now - raceStart + penaltyTime;
         //TimeSpan raceTime = DateTime.Now - raceStart;
 
     }
