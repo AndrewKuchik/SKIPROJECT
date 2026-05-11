@@ -13,11 +13,13 @@ public class PlayerControl : MonoBehaviour
         [SerializeField] private float disabledTime = 0.7f;
         private float lastDisabledTime;
 private Rigidbody rb;
+public static Transform playerPos;
     private void Awake()
     {
         move = InputSystem.actions.FindAction("Player/Move");
         rb = GetComponent<Rigidbody>();
-        
+        playerPos = transform;
+
     }
 
     private void OnEnable()
