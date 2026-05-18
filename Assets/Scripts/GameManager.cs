@@ -12,7 +12,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text timerText, bestTimeText;
     public delegate void TimerEvent();
 
+
+
     [SerializeField]private string bestTimeKey = "bestTimeLVL1";
+    
+    
     private void OnEnable()
     {
         StartGate.StartRace += StartRace;
