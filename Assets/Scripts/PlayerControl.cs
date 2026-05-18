@@ -14,10 +14,12 @@ public class PlayerControl : MonoBehaviour
         private float lastDisabledTime;
 private Rigidbody rb;
 public static Transform playerPos;
+private Animator anim;
     private void Awake()
     {
         move = InputSystem.actions.FindAction("Player/Move");
         rb = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
         playerPos = transform;
 
     }
@@ -68,7 +70,8 @@ public static Transform playerPos;
         
         //Debug.Log("slopeAngle" + slopeAngle);
         }
-                
-        
+        anim.SetBool("grounded", isGrounded);
+        anim.SetFloat("playerSpeed", rb.linearVelocity.magnitude);        
+        Debug.Log("speed" + rb.linearVelocity.magnitude);
     }
 }
