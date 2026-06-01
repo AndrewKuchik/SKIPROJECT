@@ -28,4 +28,4 @@ Vizuālie:
 - slēpju pēdu efekts pazūd, kad spēlētājs lec vai atrodas gaisā;
 - sniegavīra sadursmes particle efekts;
 
-
+Level 2 Added
