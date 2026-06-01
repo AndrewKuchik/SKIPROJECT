@@ -1,28 +1,40 @@
-using System;
 using UnityEngine;
 using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    private DateTime raceStart;
-    private TimeSpan raceTime;
-    private TimeSpan penaltyTime;
-    private TimeSpan bestTime;
+    private float raceStartTime;
+    private float raceTime = 0f;
+    private float penaltyTime = 0f;
+    private float bestTime = float.MaxValue;
+
     private bool racing = false;
-    [SerializeField] private TMP_Text timerText, bestTimeText;
+
+    [SerializeField] private TMP_Text timerText;
+    [SerializeField] private TMP_Text bestTimeText;
+
+    [SerializeField] private string bestTimeKey = "bestTimeLVL1_final";
+
+    [Header("Performance")]
+    [SerializeField] private float uiUpdateInterval = 0.1f;
+
+    private float nextUiUpdateTime = 0f;
+
     public delegate void TimerEvent();
 
+    private void Awake()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+    }
 
-
-    [SerializeField]private string bestTimeKey = "bestTimeLVL1";
-    
-    
     private void OnEnable()
     {
         StartGate.StartRace += StartRace;
         FinishGate.FinishRace += FinishRace;
         SlalomFlag.RacePenalty += AddRacePenalty;
     }
+
     private void OnDisable()
     {
         StartGate.StartRace -= StartRace;
@@ -32,42 +44,84 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        int bestTimeInt = PlayerPrefs.GetInt(bestTimeKey, int.MaxValue);
-        bestTime = new TimeSpan(bestTimeInt);
-        bestTimeText.text = "BEST TIME" + bestTime.ToString("mm\\:ss");
-    }
-    void AddRacePenalty()
-    {
-        penaltyTime += new TimeSpan(0, 0, 3);
-    }
-    void FinishRace()
-    {
-        racing = false;
-        GameData.Instance.AddLevelTime((float)raceTime.TotalMilliseconds/1000f);
-        if (raceTime < bestTime)
+        raceTime = 0f;
+        penaltyTime = 0f;
+
+        timerText.text = "TIME " + FormatTime(raceTime);
+
+        if (PlayerPrefs.HasKey(bestTimeKey))
         {
-            bestTimeText.text = "BEST TIME" + raceTime.ToString("mm\\:ss");
-            PlayerPrefs.SetInt(bestTimeKey,(int)raceTime.Ticks);
-            PlayerPrefs.Save();
-            
+            bestTime = PlayerPrefs.GetFloat(bestTimeKey);
+            bestTimeText.text = "BEST TIME " + FormatTime(bestTime);
+        }
+        else
+        {
+            bestTime = float.MaxValue;
+            bestTimeText.text = "BEST TIME --:--.-";
         }
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void StartRace()
+
+    private void StartRace()
     {
         racing = true;
-        raceStart = DateTime.Now;
+        raceStartTime = Time.time;
+        raceTime = 0f;
+        penaltyTime = 0f;
+        nextUiUpdateTime = 0f;
     }
 
-    
-
-    // Update is called once per frame
-    void Update()
+    private void AddRacePenalty()
     {
         if (racing)
-            raceTime = DateTime.Now - raceStart + penaltyTime;
-        timerText.text = "TIME " + raceTime.ToString("mm\\:ss");
-        
+        {
+            penaltyTime += 3f;
+        }
+    }
 
+    private void FinishRace()
+    {
+        if (!racing)
+            return;
+
+        racing = false;
+
+        if (GameData.Instance != null)
+        {
+            GameData.Instance.AddLevelTime(raceTime);
+        }
+
+        if (raceTime < bestTime)
+        {
+            bestTime = raceTime;
+            bestTimeText.text = "BEST TIME " + FormatTime(bestTime);
+
+            PlayerPrefs.SetFloat(bestTimeKey, bestTime);
+            PlayerPrefs.Save();
+        }
+
+        timerText.text = "TIME " + FormatTime(raceTime);
+    }
+
+    private void Update()
+    {
+        if (racing)
+        {
+            raceTime = Time.time - raceStartTime + penaltyTime;
+        }
+
+        if (Time.time >= nextUiUpdateTime)
+        {
+            timerText.text = "TIME " + FormatTime(raceTime);
+            nextUiUpdateTime = Time.time + uiUpdateInterval;
+        }
+    }
+
+    private string FormatTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60f);
+        int seconds = Mathf.FloorToInt(time % 60f);
+        int tenths = Mathf.FloorToInt((time * 10f) % 10f);
+
+        return $"{minutes:00}:{seconds:00}.{tenths}";
     }
 }

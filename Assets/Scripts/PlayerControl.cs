@@ -40,7 +40,7 @@ private Animator anim;
         disabled = true;
         lastDisabledTime = Time.timeSinceLevelLoad;
         rb.AddForce(pushbackForce);
-        Debug.Log("I GOT HIT");
+       // Debug.Log("I GOT HIT");
         
     }
     //private void OnDrawGizmos()
@@ -72,6 +72,6 @@ private Animator anim;
         }
         anim.SetBool("grounded", isGrounded);
         anim.SetFloat("playerSpeed", rb.linearVelocity.magnitude);        
-        Debug.Log("speed" + rb.linearVelocity.magnitude);
+        //Debug.Log("speed" + rb.linearVelocity.magnitude);
     }
 }
