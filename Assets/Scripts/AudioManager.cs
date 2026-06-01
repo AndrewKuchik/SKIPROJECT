@@ -1,13 +1,24 @@
-using System;
 using UnityEngine;
-//using static AudioManager;
 
 public class AudioManager : MonoBehaviour
 {
     private AudioSource audioSource;
+
+    [Header("Obstacle")]
     [SerializeField] private AudioClip obstacleHitSound;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+
+    [Header("Flags")]
+    [SerializeField] private AudioClip correctFlagSound;
+
+    [SerializeField] private AudioClip correctSoundanother;
+        
+    [SerializeField] private AudioClip penaltySound;
+    [SerializeField] private AudioClip penaltySoundanother;
+
+    [Header("Race")]
+    [SerializeField] private AudioClip finishSound;
+
+    private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
     }
@@ -15,17 +26,46 @@ public class AudioManager : MonoBehaviour
     private void OnEnable()
     {
         Obstacle.OnPlayerHit += PlayObstacleHitSound;
+        SlalomFlag.CorrectFlagPassed += PlayCorrectFlagSound;
+        SlalomFlag.RacePenalty += PlayPenaltySound;
+        FinishGate.FinishRace += PlayFinishSound;
     }
 
     private void OnDisable()
     {
         Obstacle.OnPlayerHit -= PlayObstacleHitSound;
+        SlalomFlag.CorrectFlagPassed -= PlayCorrectFlagSound;
+        SlalomFlag.RacePenalty -= PlayPenaltySound;
+        FinishGate.FinishRace -= PlayFinishSound;
     }
 
-    // Update is called once per frame
     private void PlayObstacleHitSound()
     {
-        audioSource.PlayOneShot(obstacleHitSound);
+        PlaySound(obstacleHitSound);
     }
-    
+
+    private void PlayCorrectFlagSound()
+    {
+        PlaySound(correctFlagSound);
+        PlaySound(correctSoundanother);
+    }
+
+    private void PlayPenaltySound()
+    {
+        PlaySound(penaltySound);
+        PlaySound(penaltySoundanother);
+    }
+
+    private void PlayFinishSound()
+    {
+        PlaySound(finishSound);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
 }

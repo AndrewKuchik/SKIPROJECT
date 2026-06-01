@@ -12,10 +12,10 @@ public class Obstacle : MonoBehaviour
 
     internal virtual void OnCollision(Collision collision)
     {
-        if (collision.collider.tag.Equals("Player"))
+        if (collision.collider.CompareTag("Player"))
         {
-            Debug.Log("Player collided with Obstacle"+ name);
+            Debug.Log("Player collided with Obstacle " + name);
+            OnPlayerHit?.Invoke();
         }
-        OnPlayerHit.Invoke();
     }
 }

@@ -1,14 +1,15 @@
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 public class SlalomFlag : MonoBehaviour
 {
-    private enum Direction {Left, Right}
+    private enum Direction { Left, Right }
 
     [SerializeField] private Direction flagDirection;
-    private bool flagPassed = false;
+    [SerializeField] private bool flagPassed = false;
     [SerializeField] private Material goodMat, badMat;
+
     public static GameManager.TimerEvent RacePenalty;
+    public static GameManager.TimerEvent CorrectFlagPassed;
     
     void Update()
     {
@@ -17,22 +18,27 @@ public class SlalomFlag : MonoBehaviour
             !flagPassed)
         {
             flagPassed = true;
+
             Direction passingDirection = Direction.Right;
+
             if (PlayerControl.playerPos.position.x < transform.position.x)
-                passingDirection = Direction.Left;
-            MeshRenderer rendered = GetComponent<MeshRenderer>();
-            if (passingDirection == flagDirection)
             {
-                rendered.material = goodMat;
+                passingDirection = Direction.Left;
             }
 
+            MeshRenderer renderer = GetComponent<MeshRenderer>();
+
+            if (passingDirection == flagDirection)
+            {
+                renderer.material = goodMat;
+                CorrectFlagPassed?.Invoke();
+            }
             else
             {
-                rendered.material = badMat;
-                RacePenalty.Invoke();
+                renderer.material = badMat;
+                RacePenalty?.Invoke();
             }
-                
-            flagPassed = true;
+
             Debug.Log("flag passed");
         }
     }
